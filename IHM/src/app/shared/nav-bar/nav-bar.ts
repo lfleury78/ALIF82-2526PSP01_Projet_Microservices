@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { KeycloakAuthService } from '../../services/keycloak/keycloak';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, NgbDropdownModule],
+  imports: [CommonModule, RouterModule, NgbDropdownModule],
   templateUrl: './nav-bar.html',
   styleUrl: './nav-bar.css',
 })

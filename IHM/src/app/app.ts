@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavBar } from './shared/nav-bar/nav-bar';
-import { HomePage } from './pages/home-page/home-page';
+import { Location } from './pages/location/location';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, NavBar, HomePage],
+  imports: [CommonModule, NavBar, Location],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -1,5 +1,4 @@
 .navbar {
-    background-color: #333;
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -11,9 +10,31 @@
 }
 
 .navbar-brand h1 {
-    color: #fff;
+    color: #222121;
     margin: 0;
     font-size: 1.5rem;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    color: #222121;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #000000;
 }
 
 .navbar-auth {
@@ -25,7 +46,7 @@
 .user-icon-btn {
     background: none;
     border: none;
-    color: #fff;
+    color: #000000;
     cursor: pointer;
     display: flex;
     align-items: center;
