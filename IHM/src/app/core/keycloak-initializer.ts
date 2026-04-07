@@ -1,13 +1,14 @@
 import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
+import { environment } from '../../environments/environment';
 
 export function initializeKeycloak(keycloakService: KeycloakService): () => Promise<boolean> {
   return () =>
     keycloakService.init({
       config: {
-        url: 'http://localhost:8080',
-        realm: 'HessBnb',
-        clientId: 'frontend_app',
+        url: environment.KEYCLOAK_URL,
+        realm: environment.KEYCLOAK_REALM,
+        clientId: environment.KEYCLOAK_CLIENTID,
       },
       initOptions: {
         onLoad: 'check-sso',

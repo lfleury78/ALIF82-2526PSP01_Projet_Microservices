@@ -1,4 +1,8 @@
 <div id="list-location" class="d-block">
+    <div class="location-header">
+        <p class="hessbnb-selection">HESSBNB SELECTION</p>
+        <p class="location-title">Trouvez votre prochaine destination de rêve</p>
+    </div>
     <div style="display: flex; justify-content: center;">
         <div class="row row-cols-1 row-cols-md-3 g-4">
         @for (location of this.listLocations; track location.name) {
@@ -14,7 +18,7 @@
                             <br>
                             <strong>Capacité:</strong> {{ location.capacity }} personnes
                         </p>
-                        <a href="#" class="btn btn-primary card-button">Go somewhere</a>
+                        <a href="#" class="btn btn-primary card-button">Voir plus</a>
                     </div>
                 </div>
             </div>
