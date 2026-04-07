@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
-import { count } from 'rxjs';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-locations',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './locations.html',
   styleUrl: './locations.css',
 })
