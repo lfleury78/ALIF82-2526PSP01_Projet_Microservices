@@ -1,10 +1,14 @@
 import { Routes } from '@angular/router';
-import { Location
+import { Locations } from './pages/locations/locations';
+import { Location } from './pages/location/location';
 
- } from './pages/location/location';
 export const routes: Routes = [
-{
+  {
     path: '',
+    component: Locations,
+  },
+  {
+    path: 'location',
     component: Location,
   }
 ];
