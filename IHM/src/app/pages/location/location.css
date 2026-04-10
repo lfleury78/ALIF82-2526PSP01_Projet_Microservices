@@ -126,6 +126,17 @@
     background-color: #5c636a;
 }
 
+.btn-outline-primary {
+    background-color: transparent;
+    color: #0d6efd;
+    border: 2px solid #0d6efd;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: #ffffff;
+}
+
 @media (max-width: 768px) {
     .detail-stats {
         flex-direction: column;

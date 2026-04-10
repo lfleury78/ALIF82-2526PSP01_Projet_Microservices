@@ -1,0 +1,159 @@
+<div id="messages-page">
+  <div class="messages-header">
+    <p class="hessbnb-selection">MESSAGERIE</p>
+    <p class="location-title">Mes messages</p>
+  </div>
+
+  <div class="chat-container">
+
+    <!-- Left panel: conversation list -->
+    <aside class="conversation-list" aria-label="Liste des conversations">
+
+      <div *ngIf="loadingConversations" class="panel-state">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p>Chargement des conversations…</p>
+      </div>
+
+      <div *ngIf="errorConversations && !loadingConversations" class="panel-state panel-error">
+        <p>{{ errorConversations }}</p>
+        <button class="btn btn-secondary btn-sm" (click)="loadConversations()">Réessayer</button>
+      </div>
+
+      <div
+        *ngIf="!loadingConversations && !errorConversations && conversations.length === 0"
+        class="panel-state"
+      >
+        <p class="text-muted">Aucune conversation pour le moment.</p>
+      </div>
+
+      <ul
+        *ngIf="!loadingConversations && conversations.length > 0"
+        class="conversation-items"
+        role="list"
+      >
+        <li
+          *ngFor="let conv of conversations"
+          class="conversation-item"
+          [class.active]="selectedConversation?.idConversation === conv.idConversation"
+          (click)="selectConversation(conv)"
+          (keydown.enter)="selectConversation(conv)"
+          tabindex="0"
+          role="button"
+          [attr.aria-pressed]="selectedConversation?.idConversation === conv.idConversation"
+          [attr.aria-label]="'Conversation ' + conv.idConversation"
+        >
+          <div class="conversation-avatar" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="conversation-info">
+            <span class="conversation-name">Conversation #{{ conv.idConversation }}</span>
+            <span class="conversation-preview" *ngIf="conv.dernierMessage">
+              {{ conv.dernierMessage }}
+            </span>
+            <span class="conversation-preview text-muted" *ngIf="!conv.dernierMessage">
+              Aucun message
+            </span>
+          </div>
+          <span
+            *ngIf="conv.nonLus && conv.nonLus > 0"
+            class="unread-badge"
+            [attr.aria-label]="conv.nonLus + ' messages non lus'"
+          >
+            {{ conv.nonLus }}
+          </span>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Right panel: message thread -->
+    <section class="message-panel" aria-label="Fil de messages">
+
+      <!-- Empty state -->
+      <div *ngIf="!selectedConversation" class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+          fill="none" stroke="#6c757d" stroke-width="1.5" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <p>Sélectionnez une conversation pour afficher les messages.</p>
+      </div>
+
+      <ng-container *ngIf="selectedConversation">
+        <!-- Thread header -->
+        <div class="thread-header">
+          <span class="thread-title">Conversation #{{ selectedConversation.idConversation }}</span>
+        </div>
+
+        <!-- Messages -->
+        <div class="message-thread" #messageThread aria-live="polite" aria-label="Messages">
+
+          <div *ngIf="loadingMessages" class="panel-state">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Chargement…</span>
+            </div>
+          </div>
+
+          <div *ngIf="errorMessages && !loadingMessages" class="panel-state panel-error">
+            <p>{{ errorMessages }}</p>
+          </div>
+
+          <div
+            *ngIf="!loadingMessages && !errorMessages && messages.length === 0"
+            class="panel-state"
+          >
+            <p class="text-muted">Aucun message. Commencez la conversation !</p>
+          </div>
+
+          <div
+            *ngFor="let msg of messages"
+            class="message-row"
+            [class.message-row--own]="isOwnMessage(msg.idExpediteur)"
+          >
+            <div
+              class="message-bubble"
+              [class.message-bubble--own]="isOwnMessage(msg.idExpediteur)"
+              [class.message-bubble--other]="!isOwnMessage(msg.idExpediteur)"
+            >
+              <span class="message-sender">{{ getSenderLabel(msg.idExpediteur) }}</span>
+              <p class="message-content">{{ msg.contenu }}</p>
+              <span class="message-time">{{ formatDate(msg.dateEnvoi) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Send input -->
+        <div class="message-input-area">
+          <input
+            #messageInput
+            type="text"
+            class="message-input"
+            placeholder="Écrire un message…"
+            aria-label="Écrire un message"
+            (keydown)="handleSendKeydown($event, messageInput)"
+          />
+          <button
+            class="btn btn-primary send-btn"
+            (click)="sendMessage(messageInput)"
+            aria-label="Envoyer le message"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            <span class="send-label">Envoyer</span>
+          </button>
+        </div>
+      </ng-container>
+
+    </section>
+  </div>
+</div>

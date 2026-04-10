@@ -4,6 +4,7 @@ import { Location } from './pages/location/location';
 import { Reservations } from './pages/reservations/reservations';
 import { MakeReservation } from './pages/make-reservation/make-reservation';
 import { MyLocations } from './pages/my-locations/my-locations';
+import { Messages } from './pages/messages/messages';
 
 export const routes: Routes = [
   {
@@ -25,5 +26,9 @@ export const routes: Routes = [
   {
     path: 'reservations',
     component: Reservations,
-  }
+  },
+  {
+    path: 'messages',
+    component: Messages,
+  },
 ];
