@@ -1,0 +1,338 @@
+.my-locations-wrapper {
+  padding: 3%;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.location-header {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.hessbnb-selection {
+  color: #0d6efd;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.2rem;
+  margin: 0;
+}
+
+.location-title {
+  font-size: xx-large;
+  font-weight: 700;
+  margin: 0.5rem 0 0 0;
+}
+
+/* === Add Location Button Section === */
+.add-location-section {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 2rem;
+}
+
+.btn-add {
+  background-color: #198754;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.btn-add:hover {
+  background-color: #157347;
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.4);
+  transform: translateY(-2px);
+}
+
+/* === Add Form Container === */
+.add-form-container {
+  margin-bottom: 3rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.form-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* === Form Elements === */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-control {
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* === Form Buttons === */
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+  transform: translateY(-2px);
+}
+
+/* === Locations List Container === */
+.locations-list-container {
+  display: flex;
+  justify-content: center;
+}
+
+.empty-state {
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  color: #717171;
+  font-size: 1.1rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* === Cards Grid === */
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.col {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.location-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.location-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+.card-img-top {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.card-subtitle {
+  color: #717171;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.card-text {
+  color: #717171;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.card-description {
+  color: #717171;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+/* === Card Actions === */
+.card-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.card-actions .btn-sm {
+  flex: 1;
+  text-align: center;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .my-locations-wrapper {
+    padding: 1rem;
+  }
+
+  .location-title {
+    font-size: 1.8rem;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+    justify-content: stretch;
+  }
+
+  .form-buttons .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .location-title {
+    font-size: 1.4rem;
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
+  .form-control {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .add-location-section {
+    margin-bottom: 1.5rem;
+  }
+}

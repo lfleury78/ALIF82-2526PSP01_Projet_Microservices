@@ -1,0 +1,133 @@
+<div id="my-locations-container" class="my-locations-wrapper">
+  <div class="location-header">
+    <p class="hessbnb-selection">MES LOCATIONS</p>
+    <p class="location-title">Gérez vos annonces de location</p>
+  </div>
+
+  <div class="add-location-section">
+    <button class="btn btn-success btn-add" (click)="toggleAddForm()">
+      {{ showAddForm ? '✕ Annuler' : '+ Ajouter une location' }}
+    </button>
+  </div>
+
+  <div class="add-form-container" *ngIf="showAddForm">
+    <div class="form-card">
+      <h3>Ajouter une nouvelle location</h3>
+      
+      <form (ngSubmit)="addLocation()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Nom de la location</label>
+            <input 
+              type="text" 
+              id="name" 
+              [(ngModel)]="newLocation.name" 
+              name="name"
+              class="form-control"
+              placeholder="Ex: Studio Parisien"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="price">Prix par nuit (€)</label>
+            <input 
+              type="number" 
+              id="price" 
+              [(ngModel)]="newLocation.price" 
+              name="price"
+              class="form-control"
+              placeholder="Ex: 150"
+              required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">Ville</label>
+            <input 
+              type="text" 
+              id="city" 
+              [(ngModel)]="newLocation.city" 
+              name="city"
+              class="form-control"
+              placeholder="Ex: Paris"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="country">Pays</label>
+            <input 
+              type="text" 
+              id="country" 
+              [(ngModel)]="newLocation.country" 
+              name="country"
+              class="form-control"
+              placeholder="Ex: France"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="capacity">Capacité (personnes)</label>
+            <input 
+              type="number" 
+              id="capacity" 
+              [(ngModel)]="newLocation.capacity" 
+              name="capacity"
+              class="form-control"
+              placeholder="Ex: 4"
+              required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description" 
+            [(ngModel)]="newLocation.description" 
+            name="description"
+            class="form-control form-textarea"
+            placeholder="Décrivez votre location..."
+            rows="4"
+            required></textarea>
+        </div>
+
+        <div class="form-buttons">
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+          <button type="button" class="btn btn-secondary" (click)="toggleAddForm()">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="locations-list-container">
+    <div *ngIf="myLocationsList.length === 0" class="empty-state">
+      <p>Vous n'avez pas encore de locations. <strong>Ajoutez-en une!</strong></p>
+    </div>
+
+    <div *ngIf="myLocationsList.length > 0" class="row row-cols-1 row-cols-md-3 g-4">
+      @for (location of myLocationsList; track location.id) {
+        <div class="col">
+          <div class="card location-card">
+            <img src="https://imgs.search.brave.com/WKzJpWv8MjY58GkSvwk38vkrV_vY5oY-sGOeyXvaAmA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y2VudHVyeTIxLmZy/L2ltYWdlc0JpZW4v/czMvMjAyLzI0NjQv/YzIxXzIwMl8yNDY0/XzE2Mzc2XzhfOEQ5/Q0UyOTYtMkIzOS00/Nzg1LTlEODktOUJF/RUZCRkQ1RUI4Lmpw/Zw"
+              class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{{ location.name }}</h5>
+              <p class="card-subtitle">{{ location.city }}, {{ location.country }}</p>
+              <p class="card-text">
+                <strong>Prix par nuit:</strong> {{ location.price }}€
+                <br>
+                <strong>Capacité:</strong> {{ location.capacity }} personnes
+              </p>
+              <p class="card-description">{{ location.description }}</p>
+              
+              <div class="card-actions">
+                <button class="btn btn-sm btn-warning" (click)="editLocation(location.id)">Éditer</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteLocation(location.id)">Supprimer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
