@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { KeycloakAuthService } from '../../services/keycloak/keycloak';
 
 @Component({
   selector: 'app-location',
@@ -10,9 +11,13 @@ import { RouterModule } from '@angular/router';
 })
 export class Location implements OnInit {
   selectedLocation: any = null;
+  isAuthenticated = false;
+
+  constructor(private keycloakService: KeycloakAuthService) {}
 
   ngOnInit(): void {
     this.loadLocation();
+    this.isAuthenticated = this.keycloakService.isLoggedIn();
   }
 
   loadLocation(): void {
@@ -25,5 +30,9 @@ export class Location implements OnInit {
       country: 'France',
       capacity: 4
     };
+  }
+
+  login(): void {
+    this.keycloakService.login();
   }
 }
