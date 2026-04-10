@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="quarkus">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/assets/keycloak-26.5.7/lib/quarkus/generated-bytecode.jar!/" />
+      <root url="jar://$PROJECT_DIR$/assets/keycloak-26.5.7/lib/quarkus/transformed-bytecode.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
