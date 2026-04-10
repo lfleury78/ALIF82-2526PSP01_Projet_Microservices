@@ -1,0 +1,109 @@
+<div id="make-reservation" class="make-reservation-container">
+  <div class="header-section">
+    <h1>Formulaire de Réservation</h1>
+  </div>
+
+  <div class="content-section" *ngIf="selectedLocation">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="location-card">
+          <img [src]="selectedLocation.image" alt="{{ selectedLocation.name }}" class="location-image">
+          
+          <div class="location-details">
+            <h2 class="location-name">{{ selectedLocation.name }}</h2>
+            <p class="location-location">
+              <i class="fas fa-map-marker-alt"></i> 
+              {{ selectedLocation.city }}, {{ selectedLocation.country }}
+            </p>
+            
+            <div class="location-info">
+              <div class="info-item">
+                <strong>Capacité:</strong>
+                <span>{{ selectedLocation.capacity }} personnes</span>
+              </div>
+              <div class="info-item">
+                <strong>Prix par nuit:</strong>
+                <span class="price">{{ selectedLocation.price }}€</span>
+              </div>
+            </div>
+
+            <div class="location-description">
+              <h4>Description</h4>
+              <p>{{ selectedLocation.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="reservation-form-card">
+          <h3>Mes Dates de Séjour</h3>
+          
+          <form (ngSubmit)="submitReservation()">
+            <div class="form-group">
+              <label for="departureDate" class="form-label">Date de Départ</label>
+              <input 
+                type="date" 
+                id="departureDate" 
+                [(ngModel)]="departureDate" 
+                name="departureDate"
+                (change)="onDepartureDateChange()"
+                class="form-control"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="arrivalDate" class="form-label">Date d'Arrivée</label>
+              <input 
+                type="date" 
+                id="arrivalDate" 
+                [(ngModel)]="arrivalDate" 
+                name="arrivalDate"
+                (change)="onArrivalDateChange()"
+                class="form-control"
+                required>
+            </div>
+
+            <div class="summary-section" *ngIf="numberOfNights > 0">
+              <div class="summary-item">
+                <span>Nombre de nuits:</span>
+                <strong>{{ numberOfNights }} nuit(s)</strong>
+              </div>
+
+              <!-- Calcul du Prix -->
+              <div class="pricing-breakdown">
+                <div class="pricing-item">
+                  <span>{{ numberOfNights }} nuit(s) × {{ pricePerNight }}€</span>
+                  <span>{{ numberOfNights * pricePerNight }}€</span>
+                </div>
+                <div class="pricing-total">
+                  <span>Total:</span>
+                  <strong>{{ totalPrice }}€</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert-section" *ngIf="departureDate && arrivalDate && numberOfNights <= 0">
+              <p class="alert-message">⚠️ La date d'arrivée doit être après la date de départ</p>
+            </div>
+
+            <div class="button-group">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-reserve"
+                [disabled]="numberOfNights <= 0">
+                Réserver
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-secondary btn-cancel"
+                (click)="cancel()">
+                Annuler
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
