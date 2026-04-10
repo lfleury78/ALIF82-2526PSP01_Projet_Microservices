@@ -1,0 +1,16 @@
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/MessagerieServiceApplication.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/config/CorsConfig.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/config/WebSocketConfig.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/controller/MessagerieController.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/dto/ConversationResponse.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/dto/CreateConversationRequest.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/dto/MessageDTO.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/dto/MessageResponse.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/entity/Conversation.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/entity/Message.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/exception/ConversationAlreadyExistsException.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/exception/ConversationNotFoundException.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/exception/GlobalExceptionHandler.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/repository/ConversationRepository.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/repository/MessageRepository.java
+/Users/elhadjsylla/Documents/EFREI/S8/Architecture/ALIF82-2526PSP01_Projet_Microservices/messagerie-service/src/main/java/com/hessbnb/messagerie/service/MessagerieService.java
