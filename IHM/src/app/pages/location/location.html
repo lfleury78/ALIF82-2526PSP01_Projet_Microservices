@@ -1,0 +1,44 @@
+<div id="detail-location" class="d-block">
+    <div class="location-header">
+        <p class="hessbnb-selection">DÉTAIL DE LA LOCATION</p>
+        <p class="location-title">{{ selectedLocation?.name }}</p>
+    </div>
+    <div style="display: flex; justify-content: center; margin-top: 2rem;">
+        <div class="detail-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="https://imgs.search.brave.com/WKzJpWv8MjY58GkSvwk38vkrV_vY5oY-sGOeyXvaAmA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y2VudHVyeTIxLmZy/L2ltYWdlc0JpZW4v/czMvMjAyLzI0NjQv/YzIxXzIwMl8yNDY0/XzE2Mzc2XzhfOEQ5/Q0UyOTYtMkIzOS00/Nzg1LTlEODktOUJF/RUZCRkQ1RUI4Lmpw/Zw"
+                        class="detail-image" alt="...">
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-info">
+                        <h2>{{ selectedLocation?.name }}</h2>
+                        <p class="detail-subtitle">{{ selectedLocation?.city }}, {{ selectedLocation?.country }}</p>
+                        
+                        <div class="detail-stats">
+                            <div class="stat">
+                                <strong>Prix par nuit:</strong>
+                                <p>{{ selectedLocation?.price }}€</p>
+                            </div>
+                            <div class="stat">
+                                <strong>Capacité:</strong>
+                                <p>{{ selectedLocation?.capacity }} personnes</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-description">
+                            <h3>Description</h3>
+                            <p>{{ selectedLocation?.description }}</p>
+                        </div>
+
+                        <div class="detail-actions">
+                            <button class="btn btn-primary" routerLink="/make-reservation" *ngIf="isAuthenticated">Réserver</button>
+                            <button class="btn btn-primary" *ngIf="!isAuthenticated" (click)="login()">Connexion</button>
+                            <a routerLink="" class="btn btn-secondary">Retour</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
