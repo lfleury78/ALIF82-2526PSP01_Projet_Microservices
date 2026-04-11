@@ -93,8 +93,80 @@
 }
 
 .detail-actions {
-    display: flex;
-    gap: 1rem;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.reviews-section {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.reviews-section h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.no-reviews {
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+.review-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.review-author {
+  margin-bottom: 1rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.review-comment {
+  margin: 0;
+  color: #333;
+}
+
+.review-form {
+  margin-top: 2rem;
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.review-form h4 {
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
 .btn {
@@ -127,11 +199,19 @@
 }
 
 @media (max-width: 768px) {
-    .detail-stats {
-        flex-direction: column;
-    }
-    
-    .detail-image {
-        height: 250px;
-    }
+  .detail-stats {
+    flex-direction: column;
+  }
+
+  .detail-image {
+    height: 250px;
+  }
+
+  .detail-actions {
+    flex-direction: column;
+  }
+
+  .reviews-section {
+    padding: 1rem;
+  }
 }
