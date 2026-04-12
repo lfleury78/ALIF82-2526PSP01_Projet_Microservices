@@ -1,10 +1,12 @@
 import "dotenv/config";
-import express from "express";
+import express, { Router } from "express";
 import cors from "cors";
 import { pool } from "./db";
 import { requireAuth } from "./auth";
 
 const app = express();
+const apiRouter = Router();
+
 app.use(cors());
 app.use(express.json());
 
@@ -21,7 +23,7 @@ function nightsBetween(dateDebut: string, dateFin: string): number {
   return Math.floor((end - start) / (24 * 60 * 60 * 1000));
 }
 
-app.get("/health", async (_req, res) => {
+apiRouter.get("/health", async (_req, res) => {
   try {
     await pool.query("SELECT 1 as ok");
     res.json({ ok: true, db: true });
@@ -31,7 +33,7 @@ app.get("/health", async (_req, res) => {
 });
 
 // List reservations (filters: locataire, annonce, statut)
-app.get("/reservations", requireAuth, async (req, res) => {
+apiRouter.get("/reservations", requireAuth, async (req, res) => {
   const idLocataire = req.query.id_locataire ? Number(req.query.id_locataire) : null;
   const idAnnonce = req.query.id_annonce ? Number(req.query.id_annonce) : null;
   const statut = (req.query.statut as string | undefined) ?? null;
@@ -73,7 +75,7 @@ app.get("/reservations", requireAuth, async (req, res) => {
   res.json(rows);
 });
 
-app.get("/reservations/:id", requireAuth, async (req, res) => {
+apiRouter.get("/reservations/:id", requireAuth, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) {
     res.status(400).json({ error: "invalid_id" });
@@ -105,7 +107,7 @@ app.get("/reservations/:id", requireAuth, async (req, res) => {
 });
 
 // Delete reservation
-app.delete("/reservations/:id", requireAuth, async (req, res) => {
+apiRouter.delete("/reservations/:id", requireAuth, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) {
     res.status(400).json({ error: "invalid_id" });
@@ -123,7 +125,7 @@ app.delete("/reservations/:id", requireAuth, async (req, res) => {
 
 // Create reservation:
 // body: { id_annonce, id_locataire, date_debut (YYYY-MM-DD), date_fin (YYYY-MM-DD), nb_voyageurs }
-app.post("/reservations", requireAuth, async (req, res) => {
+apiRouter.post("/reservations", requireAuth, async (req, res) => {
   const idAnnonce = Number(req.body?.id_annonce);
   const idLocataire = Number(req.body?.id_locataire);
   const dateDebut = parseDateOnly(req.body?.date_debut);
@@ -215,7 +217,7 @@ app.post("/reservations", requireAuth, async (req, res) => {
 
 // Validate reservation (CONFIRMEE)
 // POST /reservations/:id/validate
-app.post("/reservations/:id/validate", requireAuth, async (req, res) => {
+apiRouter.post("/reservations/:id/validate", requireAuth, async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isFinite(id)) {
     res.status(400).json({ error: "invalid_id" });
@@ -312,7 +314,7 @@ app.post("/reservations/:id/validate", requireAuth, async (req, res) => {
 
 // Update status
 // body: { statut: 'EN_ATTENTE' | 'CONFIRMEE' | 'ANNULEE' | 'TERMINEE' }
-app.patch("/reservations/:id/status", requireAuth, async (req, res) => {
+apiRouter.patch("/reservations/:id/status", requireAuth, async (req, res) => {
   const id = Number(req.params.id);
   const statut = req.body?.statut as string | undefined;
   const allowed = new Set(["EN_ATTENTE", "CONFIRMEE", "ANNULEE", "TERMINEE"]);
@@ -400,6 +402,9 @@ app.patch("/reservations/:id/status", requireAuth, async (req, res) => {
     conn.release();
   }
 });
+
+// Mount the API router on /api prefix
+app.use("/api", apiRouter);
 
 const port = Number(process.env.PORT ?? "3003");
 app.listen(port, () => {
