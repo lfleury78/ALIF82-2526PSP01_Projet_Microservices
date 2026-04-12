@@ -1,0 +1,16 @@
+routes:
+  - path: /api/location
+    microservice: http://localhost:8083
+    methods: [ GET, POST, PUT, DELETE ]
+  
+  - path: /api/reservation
+    microservice: http://localhost:8084
+    methods: [ GET, POST, PUT, DELETE ]
+  
+  - path: /api/user
+    microservice: http://localhost:8085
+    methods: [ GET, POST, PUT, DELETE ]
+  
+  - path: /api/payment
+    microservice: http://localhost:8086
+    methods: [ GET, POST, PUT, DELETE ]
