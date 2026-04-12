@@ -1,44 +1,113 @@
 <div id="detail-location" class="d-block">
-    <div class="location-header">
-        <p class="hessbnb-selection">DÉTAIL DE LA LOCATION</p>
-        <p class="location-title">{{ selectedLocation?.name }}</p>
-    </div>
-    <div style="display: flex; justify-content: center; margin-top: 2rem;">
-        <div class="detail-container">
-            <div class="row">
-                <div class="col-md-6">
-                    <img src="https://imgs.search.brave.com/WKzJpWv8MjY58GkSvwk38vkrV_vY5oY-sGOeyXvaAmA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y2VudHVyeTIxLmZy/L2ltYWdlc0JpZW4v/czMvMjAyLzI0NjQv/YzIxXzIwMl8yNDY0/XzE2Mzc2XzhfOEQ5/Q0UyOTYtMkIzOS00/Nzg1LTlEODktOUJF/RUZCRkQ1RUI4Lmpw/Zw"
-                        class="detail-image" alt="...">
-                </div>
-                <div class="col-md-6">
-                    <div class="detail-info">
-                        <h2>{{ selectedLocation?.name }}</h2>
-                        <p class="detail-subtitle">{{ selectedLocation?.city }}, {{ selectedLocation?.country }}</p>
-                        
-                        <div class="detail-stats">
-                            <div class="stat">
-                                <strong>Prix par nuit:</strong>
-                                <p>{{ selectedLocation?.price }}€</p>
-                            </div>
-                            <div class="stat">
-                                <strong>Capacité:</strong>
-                                <p>{{ selectedLocation?.capacity }} personnes</p>
-                            </div>
-                        </div>
-
-                        <div class="detail-description">
-                            <h3>Description</h3>
-                            <p>{{ selectedLocation?.description }}</p>
-                        </div>
-
-                        <div class="detail-actions">
-                            <button class="btn btn-primary" routerLink="/make-reservation" *ngIf="isAuthenticated">Réserver</button>
-                            <button class="btn btn-primary" *ngIf="!isAuthenticated" (click)="login()">Connexion</button>
-                            <a routerLink="" class="btn btn-secondary">Retour</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="location-header">
+    <p class="hessbnb-selection">DÉTAIL DE LA LOCATION</p>
+    <p class="location-title">{{ selectedLocation?.name }}</p>
+  </div>
+  <div style="display: flex; justify-content: center; margin-top: 2rem;">
+    <div class="detail-container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="https://imgs.search.brave.com/WKzJpWv8MjY58GkSvwk38vkrV_vY5oY-sGOeyXvaAmA/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y2VudHVyeTIxLmZy/L2ltYWdlc0JpZW4v/czMvMjAyLzI0NjQv/YzIxXzIwMl8yNDY0/XzE2Mzc2XzhfOEQ5/Q0UyOTYtMkIzOS00/Nzg1LTlEODktOUJF/RUZCRkQ1RUI4Lmpw/Zw"
+               class="detail-image" alt="...">
         </div>
+        <div class="col-md-6">
+          <div class="detail-info">
+            <h2>{{ selectedLocation?.name }}</h2>
+            <p class="detail-subtitle">{{ selectedLocation?.city }}, {{ selectedLocation?.country }}</p>
+
+            <div class="detail-stats">
+              <div class="stat">
+                <strong>Prix par nuit :</strong>
+                <p>{{ selectedLocation?.price }}€</p>
+              </div>
+
+              <div class="stat">
+                <strong>Capacité :</strong>
+                <p>{{ selectedLocation?.capacity }} personnes</p>
+              </div>
+            </div>
+
+            <div class="detail-description">
+              <h3>Description</h3>
+              <p>{{ selectedLocation?.description }}</p>
+            </div>
+
+            <div class="detail-actions">
+              <button class="btn btn-primary" routerLink="/make-reservation" *ngIf="isAuthenticated">Réserver</button>
+              <button class="btn btn-primary" *ngIf="!isAuthenticated" (click)="login()">Connexion</button>
+              <a routerLink="" class="btn btn-secondary">Retour</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reviews-section">
+        <h3>Avis des voyageurs</h3>
+
+        @for (review of reviews; track review.id) {
+          <div class="review-card">
+            <div class="review-header">
+              <strong>{{ review.author }}</strong>
+              <span>{{ review.rating }}/5</span>
+            </div>
+            <p class="review-comment">{{ review.comment }}</p>
+            <small>{{ review.createdAt | date:'short' }}</small>
+          </div>
+        } @empty {
+          <div class="no-reviews">
+            Aucun avis pour le moment.
+          </div>
+        }
+
+        @if (authChecked) {
+          @if (isAuthenticated) {
+            <div class="review-form">
+              <h4>Ajouter un avis</h4>
+
+              <p class="review-author">
+                Publié en tant que : <strong>{{ currentUsername }}</strong>
+              </p>
+
+              <form (ngSubmit)="submitReview()">
+                <div class="form-group">
+                  <label for="rating">Note</label>
+                  <select
+                    id="rating"
+                    class="form-control"
+                    name="rating"
+                    [(ngModel)]="newReview.rating"
+                    required
+                  >
+                    <option [ngValue]="5">5</option>
+                    <option [ngValue]="4">4</option>
+                    <option [ngValue]="3">3</option>
+                    <option [ngValue]="2">2</option>
+                    <option [ngValue]="1">1</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="comment">Commentaire</label>
+                  <textarea
+                    id="comment"
+                    class="form-control"
+                    name="comment"
+                    rows="4"
+                    [(ngModel)]="newReview.comment"
+                    required
+                  ></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Publier l’avis</button>
+              </form>
+            </div>
+          } @else {
+            <div class="review-form">
+              <p>Connecte-toi pour publier un avis.</p>
+            </div>
+          }
+        }
+      </div>
     </div>
+  </div>
 </div>
