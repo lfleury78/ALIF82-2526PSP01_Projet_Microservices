@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: gateway
+  servlet:
+    multipart:
+      enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/hessbnb
+
+gateway:
+  routes:
+    user-service: http://localhost:8081
+    listing-service: http://localhost:8082
+    booking-service: http://localhost:8083
+    rental-service: http://localhost:8084
+    message-service: http://localhost:8085
+    review-service: http://localhost:8086
+
+server:
+  port: 8080
+  tomcat:
+    max-swallow-size: 20MB
+    max-http-form-post-size: 20MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/hessbnb/protocol/openid-connect/certs
+
+gateway:
+  routes:
+    user-service: http://user-service:8081
+    listing-service: http://listing-service:8082
+    booking-service: http://booking-service:8083
+    rental-service: http://rental-service:8084
+    message-service: http://message-service:8085
+    review-service: http://review-service:8086
