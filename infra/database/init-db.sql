@@ -1,0 +1,7 @@
+CREATE SCHEMA IF NOT EXISTS schema_users;
+CREATE SCHEMA IF NOT EXISTS schema_listings;
+CREATE SCHEMA IF NOT EXISTS schema_bookings;
+CREATE SCHEMA IF NOT EXISTS schema_rentals;
+CREATE SCHEMA IF NOT EXISTS schema_notifications;
+CREATE SCHEMA IF NOT EXISTS message_schema;
+CREATE SCHEMA IF NOT EXISTS review_schema;

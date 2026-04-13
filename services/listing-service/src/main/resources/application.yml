@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: listing-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hessbnb?currentSchema=schema_listings
+    username: hessbnb
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: schema_listings
+    open-in-view: false
+  flyway:
+    enabled: true
+    schemas: schema_listings
+    locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/hessbnb
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+services:
+  booking-url: http://localhost:8083
+  message-url: http://localhost:8085
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+  datasource:
+    url: jdbc:postgresql://postgres:5432/hessbnb?currentSchema=schema_listings
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/hessbnb/protocol/openid-connect/certs
+  rabbitmq:
+    host: rabbitmq
+services:
+  booking-url: http://booking-service:8083
+  message-url: http://message-service:8085

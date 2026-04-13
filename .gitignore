@@ -1,5 +1,29 @@
-# MySQL data volume — never commit database files
-data/
+infra/.env
 
-# Local environment — contains credentials, never commit
-.env
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+.mvn/wrapper/maven-wrapper.jar
+
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.project
+.classpath
+.settings/
+
+node_modules/
+dist/
+.angular/
+.sass-cache/
+
+.DS_Store
+Thumbs.db
+
+postgres_data/
+infra/database/data/

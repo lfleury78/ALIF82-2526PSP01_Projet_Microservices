@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: booking-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hessbnb?currentSchema=schema_bookings
+    username: hessbnb
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: schema_bookings
+    open-in-view: false
+  flyway:
+    enabled: true
+    schemas: schema_bookings
+    locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/hessbnb
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+services:
+  message-url: http://localhost:8085
+
+server:
+  port: 8083
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/hessbnb?currentSchema=schema_bookings
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/hessbnb/protocol/openid-connect/certs
+  rabbitmq:
+    host: rabbitmq
+services:
+  message-url: http://message-service:8085
