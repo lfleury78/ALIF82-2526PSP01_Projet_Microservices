@@ -1,10 +1,12 @@
-import { Component, inject, OnInit, signal, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { MessageService } from '../../core/services/message.service';
 import { BookingService } from '../../core/services/booking.service';
 import { ReviewService } from '../../core/services/review.service';
 import { UserService } from '../../core/services/user.service';
+import { WebSocketService } from '../../core/services/websocket.service';
 import { ImageUrlPipe } from '../../core/pipes/image-url.pipe';
 import { forkJoin } from 'rxjs';
 
@@ -126,17 +128,19 @@ import { forkJoin } from 'rxjs';
     </nav>
   `,
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   auth = inject(AuthService);
   private messageService = inject(MessageService);
   private bookingService = inject(BookingService);
   private reviewService = inject(ReviewService);
   private userService = inject(UserService);
+  private ws = inject(WebSocketService);
   menuOpen = false;
   @ViewChild('menuContainer') private menuContainer?: ElementRef;
   unreadCount = signal(0);
   bookingBadgeCount = signal(0);
   private pollInterval: ReturnType<typeof setInterval> | null = null;
+  private wsSub: Subscription | null = null;
 
   get avatarUrl() {
     return this.auth.avatarUrl;
@@ -152,7 +156,22 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.loadCounts();
     this.loadAvatar();
-    this.pollInterval = setInterval(() => this.loadCounts(), 15000);
+
+    if (this.auth.isLoggedIn()) {
+      this.ws.connect();
+      this.wsSub = this.ws.unreadUpdate$.subscribe(() => {
+        this.loadUnreadCount();
+      });
+    }
+
+    this.pollInterval = setInterval(() => this.loadCounts(), 30000);
+  }
+
+  ngOnDestroy() {
+    this.wsSub?.unsubscribe();
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+    }
   }
 
   private loadAvatar() {
@@ -165,12 +184,16 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  private loadCounts() {
-    if (!this.auth.isLoggedIn()) return;
+  private loadUnreadCount() {
     this.messageService.getUnreadCount().subscribe({
       next: (count) => this.unreadCount.set(count),
       error: () => {},
     });
+  }
+
+  private loadCounts() {
+    if (!this.auth.isLoggedIn()) return;
+    this.loadUnreadCount();
     forkJoin({
       received: this.bookingService.getReceivedBookings(),
       sent: this.bookingService.getMyBookings(),

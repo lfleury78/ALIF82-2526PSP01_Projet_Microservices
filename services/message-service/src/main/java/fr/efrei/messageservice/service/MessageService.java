@@ -6,6 +6,7 @@ import fr.efrei.messageservice.entity.Message;
 import fr.efrei.messageservice.repository.ConversationRepository;
 import fr.efrei.messageservice.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class MessageService {
 
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public ConversationResponse createOrGetConversation(UUID senderId, ConversationCreateRequest request) {
@@ -78,18 +80,23 @@ public class MessageService {
             throw new IllegalArgumentException("You are not a participant of this conversation");
         }
 
+        LocalDateTime now = LocalDateTime.now();
+
         Message message = Message.builder()
                 .conversation(conversation)
                 .senderId(senderId)
                 .content(request.content())
+                .createdAt(now)
                 .build();
 
         Message saved = messageRepository.save(message);
 
-        conversation.setLastMessageAt(LocalDateTime.now());
+        conversation.setLastMessageAt(now);
         conversationRepository.save(conversation);
 
-        return toMessageResponse(saved);
+        MessageResponse response = toMessageResponse(saved);
+        notifyParticipants(conversation, response);
+        return response;
     }
 
     @Transactional
@@ -136,18 +143,23 @@ public class MessageService {
                     return conversationRepository.save(newConv);
                 });
 
+        LocalDateTime now = LocalDateTime.now();
+
         Message message = Message.builder()
                 .conversation(conversation)
                 .senderId(SYSTEM_SENDER_ID)
                 .content(request.content())
+                .createdAt(now)
                 .build();
 
-        messageRepository.save(message);
+        Message saved = messageRepository.save(message);
 
-        conversation.setLastMessageAt(LocalDateTime.now());
+        conversation.setLastMessageAt(now);
         conversation.setDeletedByOneAt(null);
         conversation.setDeletedByTwoAt(null);
         conversationRepository.save(conversation);
+
+        notifyParticipants(conversation, toMessageResponse(saved));
     }
 
     private ConversationResponse toConversationResponse(Conversation conversation) {
@@ -170,6 +182,21 @@ public class MessageService {
                 message.getContent(),
                 message.getReadAt(),
                 message.getCreatedAt()
+        );
+    }
+
+    private void notifyParticipants(Conversation conversation, MessageResponse message) {
+        messagingTemplate.convertAndSend(
+                "/topic/conversation." + conversation.getId(),
+                message
+        );
+        messagingTemplate.convertAndSend(
+                "/topic/unread." + conversation.getParticipantOneId(),
+                "update"
+        );
+        messagingTemplate.convertAndSend(
+                "/topic/unread." + conversation.getParticipantTwoId(),
+                "update"
         );
     }
 }

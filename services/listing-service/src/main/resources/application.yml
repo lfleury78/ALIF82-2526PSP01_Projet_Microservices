@@ -34,7 +34,6 @@ spring:
 
 services:
   booking-url: http://localhost:8083
-  message-url: http://localhost:8085
 
 server:
   port: 8082
@@ -68,4 +67,3 @@ spring:
     host: rabbitmq
 services:
   booking-url: http://booking-service:8083
-  message-url: http://message-service:8085

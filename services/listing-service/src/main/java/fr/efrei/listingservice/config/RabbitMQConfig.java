@@ -15,6 +15,7 @@ public class RabbitMQConfig {
     public static final String EXCHANGE = "hessbnb.exchange";
     public static final String LISTING_QUEUE = "listing.queue";
     public static final String LISTING_CREATED_KEY = "listing.created";
+    public static final String LISTING_DELETED_KEY = "listing.deleted";
 
     @Bean
     public TopicExchange exchange() {
@@ -28,7 +29,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Binding listingBinding(Queue listingQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(listingQueue).to(exchange).with(LISTING_CREATED_KEY);
+        return BindingBuilder.bind(listingQueue).to(exchange).with("listing.*");
     }
 
     @Bean

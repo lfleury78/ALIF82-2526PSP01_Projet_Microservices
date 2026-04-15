@@ -7,38 +7,27 @@ import fr.efrei.bookingservice.entity.BookingStatus;
 import fr.efrei.bookingservice.exception.BookingNotFoundException;
 import fr.efrei.bookingservice.mapper.BookingMapper;
 import fr.efrei.bookingservice.repository.BookingRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import fr.efrei.bookingservice.config.RabbitMQConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
-import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
     private final RabbitTemplate rabbitTemplate;
-    private final RestClient messageClient;
-
-    public BookingService(BookingRepository bookingRepository,
-                          BookingMapper bookingMapper,
-                          RabbitTemplate rabbitTemplate,
-                          @Value("${services.message-url}") String messageUrl) {
-        this.bookingRepository = bookingRepository;
-        this.bookingMapper = bookingMapper;
-        this.rabbitTemplate = rabbitTemplate;
-        this.messageClient = RestClient.builder().baseUrl(messageUrl).build();
-    }
 
     public BookingResponse getById(UUID id) {
         return bookingRepository.findById(id)
@@ -89,15 +78,6 @@ public class BookingService {
                 bookingMapper.toResponse(saved)
         );
 
-        sendSystemNotification(saved.getListingId(), saved.getTenantId(), saved.getOwnerId(),
-                "📋 Nouvelle demande de réservation du "
-                        + saved.getCheckInDate().format(DATE_FMT) + " au "
-                        + saved.getCheckOutDate().format(DATE_FMT)
-                        + " (" + saved.getGuestsCount() + " voyageur"
-                        + (saved.getGuestsCount() > 1 ? "s" : "") + "). "
-                        + "Montant total : " + saved.getTotalPrice() + " €. "
-                        + "En attente de confirmation du propriétaire.");
-
         return bookingMapper.toResponse(saved);
     }
 
@@ -122,13 +102,6 @@ public class BookingService {
                 bookingMapper.toResponse(saved)
         );
 
-        sendSystemNotification(saved.getListingId(), saved.getOwnerId(), saved.getTenantId(),
-                "✅ Bonne nouvelle ! Votre réservation du "
-                        + saved.getCheckInDate().format(DATE_FMT) + " au "
-                        + saved.getCheckOutDate().format(DATE_FMT)
-                        + " a été confirmée par le propriétaire. "
-                        + "Bon séjour !");
-
         return bookingMapper.toResponse(saved);
     }
 
@@ -139,11 +112,6 @@ public class BookingService {
         for (Booking booking : active) {
             booking.setStatus(BookingStatus.CANCELLED);
             bookingRepository.save(booking);
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.EXCHANGE,
-                    RabbitMQConfig.BOOKING_CANCELLED_KEY,
-                    bookingMapper.toResponse(booking)
-            );
         }
     }
 
@@ -162,43 +130,30 @@ public class BookingService {
         booking.setStatus(BookingStatus.CANCELLED);
         Booking saved = bookingRepository.save(booking);
 
+        boolean cancelledByOwner = booking.getOwnerId().equals(userId);
+        Map<String, Object> event = new HashMap<>(toEventMap(bookingMapper.toResponse(saved)));
+        event.put("cancelledBy", cancelledByOwner ? "OWNER" : "TENANT");
+
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.EXCHANGE,
                 RabbitMQConfig.BOOKING_CANCELLED_KEY,
-                bookingMapper.toResponse(saved)
+                event
         );
-
-        boolean cancelledByOwner = booking.getOwnerId().equals(userId);
-        String cancelMsg = cancelledByOwner
-                ? "❌ Le propriétaire a annulé la réservation du "
-                        + saved.getCheckInDate().format(DATE_FMT) + " au "
-                        + saved.getCheckOutDate().format(DATE_FMT) + ". "
-                        + "Un remboursement sera traité dans les plus brefs délais."
-                : "❌ Le locataire a annulé la réservation du "
-                        + saved.getCheckInDate().format(DATE_FMT) + " au "
-                        + saved.getCheckOutDate().format(DATE_FMT) + ".";
-        sendSystemNotification(saved.getListingId(), saved.getOwnerId(), saved.getTenantId(), cancelMsg);
 
         return bookingMapper.toResponse(saved);
     }
 
-    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-    private void sendSystemNotification(UUID listingId, UUID participantOneId, UUID participantTwoId, String content) {
-        try {
-            messageClient.post()
-                    .uri("/api/messages/internal/system")
-                    .header("Content-Type", "application/json")
-                    .body(Map.of(
-                            "listingId", listingId,
-                            "participantOneId", participantOneId,
-                            "participantTwoId", participantTwoId,
-                            "content", content
-                    ))
-                    .retrieve()
-                    .toBodilessEntity();
-        } catch (Exception e) {
-            log.warn("Impossible d'envoyer le message système: {}", e.getMessage());
-        }
+    private Map<String, Object> toEventMap(BookingResponse response) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", response.id().toString());
+        map.put("listingId", response.listingId().toString());
+        map.put("tenantId", response.tenantId().toString());
+        map.put("ownerId", response.ownerId().toString());
+        map.put("checkInDate", response.checkInDate().toString());
+        map.put("checkOutDate", response.checkOutDate().toString());
+        map.put("guestsCount", response.guestsCount());
+        map.put("totalPrice", response.totalPrice().toString());
+        map.put("status", response.status());
+        return map;
     }
 }

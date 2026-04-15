@@ -1,10 +1,12 @@
 import { Component, inject, OnInit, OnDestroy, signal, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { MessageService } from '../../core/services/message.service';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Conversation, Message } from '../../core/models/message.model';
+import { WebSocketService } from '../../core/services/websocket.service';
+import { Message } from '../../core/models/message.model';
 
 @Component({
   selector: 'app-conversation',
@@ -93,6 +95,7 @@ export class ConversationComponent implements OnInit, OnDestroy {
   private messageService = inject(MessageService);
   private userService = inject(UserService);
   private auth = inject(AuthService);
+  private ws = inject(WebSocketService);
 
   messages = signal<Message[]>([]);
   loading = signal(true);
@@ -100,6 +103,7 @@ export class ConversationComponent implements OnInit, OnDestroy {
   otherParticipantName = signal<string>('');
   newMessage = '';
   private conversationId = '';
+  private wsSub: Subscription | null = null;
   private pollInterval: ReturnType<typeof setInterval> | null = null;
 
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef;
@@ -113,15 +117,30 @@ export class ConversationComponent implements OnInit, OnDestroy {
     if (this.conversationId) {
       this.loadMessages();
       this.messageService.markAsRead(this.conversationId).subscribe();
+      this.resolveOtherParticipant();
+
+      this.ws.subscribeToConversation(this.conversationId);
+      this.wsSub = this.ws.newMessage$.subscribe((msg) => {
+        if (msg.conversationId === this.conversationId) {
+          const existing = this.messages();
+          if (!existing.find((m) => m.id === msg.id)) {
+            this.messages.update((msgs) => [...msgs, msg]);
+            setTimeout(() => this.scrollToBottom(), 50);
+            this.messageService.markAsRead(this.conversationId).subscribe();
+          }
+        }
+      });
+
       this.pollInterval = setInterval(() => {
         this.loadMessages(false);
         this.messageService.markAsRead(this.conversationId).subscribe();
-      }, 5000);
-      this.resolveOtherParticipant();
+      }, 30000);
     }
   }
 
   ngOnDestroy() {
+    this.wsSub?.unsubscribe();
+    this.ws.unsubscribeFromConversation(this.conversationId);
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
     }
@@ -172,7 +191,10 @@ export class ConversationComponent implements OnInit, OnDestroy {
 
     this.messageService.sendMessage(this.conversationId, { content }).subscribe({
       next: (msg) => {
-        this.messages.update((msgs) => [...msgs, msg]);
+        const existing = this.messages();
+        if (!existing.find((m) => m.id === msg.id)) {
+          this.messages.update((msgs) => [...msgs, msg]);
+        }
         this.sending.set(false);
         setTimeout(() => this.scrollToBottom(), 50);
       },

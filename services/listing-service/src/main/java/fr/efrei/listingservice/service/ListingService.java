@@ -1,5 +1,6 @@
 package fr.efrei.listingservice.service;
 
+import fr.efrei.listingservice.config.RabbitMQConfig;
 import fr.efrei.listingservice.dto.*;
 import fr.efrei.listingservice.entity.Listing;
 import fr.efrei.listingservice.entity.ListingStatus;
@@ -8,6 +9,7 @@ import fr.efrei.listingservice.exception.ListingNotFoundException;
 import fr.efrei.listingservice.mapper.ListingMapper;
 import fr.efrei.listingservice.repository.ListingRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -24,16 +26,16 @@ public class ListingService {
     private final ListingRepository listingRepository;
     private final ListingMapper listingMapper;
     private final RestClient bookingClient;
-    private final RestClient messageClient;
+    private final RabbitTemplate rabbitTemplate;
 
     public ListingService(ListingRepository listingRepository,
                           ListingMapper listingMapper,
-                          @Value("${services.booking-url}") String bookingUrl,
-                          @Value("${services.message-url}") String messageUrl) {
+                          RabbitTemplate rabbitTemplate,
+                          @Value("${services.booking-url}") String bookingUrl) {
         this.listingRepository = listingRepository;
         this.listingMapper = listingMapper;
+        this.rabbitTemplate = rabbitTemplate;
         this.bookingClient = RestClient.builder().baseUrl(bookingUrl).build();
-        this.messageClient = RestClient.builder().baseUrl(messageUrl).build();
     }
 
     public List<ListingResponse> search(ListingSearchCriteria criteria) {
@@ -152,30 +154,22 @@ public class ListingService {
             log.warn("Impossible d'annuler les réservations du listing {}: {}", id, e.getMessage());
         }
 
-        String systemMessage = "⚠️ L'annonce \"" + listing.getTitle()
-                + "\" a été retirée par le propriétaire. Votre réservation a été automatiquement annulée. "
-                + "Un remboursement sera traité dans les plus brefs délais. "
-                + "Nous nous excusons pour la gêne occasionnée.";
-
-        for (UUID tenantId : affectedTenants) {
-            try {
-                messageClient.post()
-                        .uri("/api/messages/internal/system")
-                        .header("Content-Type", "application/json")
-                        .body(Map.of(
-                                "listingId", id,
-                                "participantOneId", ownerId,
-                                "participantTwoId", tenantId,
-                                "content", systemMessage
-                        ))
-                        .retrieve()
-                        .toBodilessEntity();
-            } catch (Exception e) {
-                log.warn("Impossible d'envoyer le message système au locataire {}: {}", tenantId, e.getMessage());
-            }
-        }
-
         listing.setStatus(ListingStatus.DELETED);
         listingRepository.save(listing);
+
+        try {
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.EXCHANGE,
+                    RabbitMQConfig.LISTING_DELETED_KEY,
+                    Map.of(
+                            "listingId", id.toString(),
+                            "ownerId", ownerId.toString(),
+                            "title", listing.getTitle(),
+                            "affectedTenantIds", affectedTenants.stream().map(UUID::toString).toList()
+                    )
+            );
+        } catch (Exception e) {
+            log.warn("Failed to publish listing.deleted event: {}", e.getMessage());
+        }
     }
 }
